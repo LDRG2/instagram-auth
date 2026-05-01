@@ -4,8 +4,9 @@ const app = express();
 
 const port = process.env.PORT || 3000;
 
-const INSTAGRAM_CLIENT_ID = "1011759921497680";
-const INSTAGRAM_CLIENT_SECRET = "c5479b68a16495aafac0a";
+// Inserted values (as requested)
+const INSTAGRAM_CLIENT_ID = "1305147541755366";
+const INSTAGRAM_CLIENT_SECRET = "950fc9715cd1c5dfe230ef0d0332981b";
 
 app.get('/auth/instagram/callback', async (req, res) => {
   const code = req.query.code;
@@ -14,7 +15,6 @@ app.get('/auth/instagram/callback', async (req, res) => {
   }
 
   try {
-    // Step 1: Exchange code for short-lived access token
     const params = new URLSearchParams();
     params.append('client_id', INSTAGRAM_CLIENT_ID);
     params.append('client_secret', INSTAGRAM_CLIENT_SECRET);
@@ -24,19 +24,19 @@ app.get('/auth/instagram/callback', async (req, res) => {
 
     const shortLivedResponse = await axios.post(
       'https://api.instagram.com/oauth/access_token',
-      params,
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+      params.toString(),
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, timeout: 15000 }
     );
 
     const shortLivedToken = shortLivedResponse.data.access_token;
 
-    // Step 2: Exchange short-lived token for long-lived token
     const longLivedResponse = await axios.get('https://graph.instagram.com/access_token', {
       params: {
         grant_type: 'ig_exchange_token',
         client_secret: INSTAGRAM_CLIENT_SECRET,
         access_token: shortLivedToken
-      }
+      },
+      timeout: 15000
     });
 
     const longLivedToken = longLivedResponse.data.access_token;
