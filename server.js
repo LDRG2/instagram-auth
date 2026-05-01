@@ -19,11 +19,11 @@ app.get('/auth/instagram/callback', async (req, res) => {
   try {
     // Step 1: Exchange code for short-lived access token
     const shortLivedResponse = await axios.post('https://api.instagram.com/oauth/access_token', {
-      client_id: INSTAGRAM_CLIENT_ID,
-      client_secret: INSTAGRAM_CLIENT_SECRET,
+      client_id: '1011759921497680',
+      client_secret: 'c5479b68a16495aafac0a',
       grant_type: 'authorization_code',
       redirect_uri: 'https://instagram-auth-r1yc.onrender.com/auth/instagram/callback',
-      code: code
+      code: "AQDowliubujHhj1MnTJs3ylKkFnTCEuX3Zw-0YSSIgLfN2RpNgQ3drlqmHwCtZsXRI6Jhkxu-4JS-60rePk0b5wIn34kDwRlBc10om-WbIB1l9UTAFlp_HfeB4tdOvna5DeAevFMZBM_NDt4coYJHZtVKgZaSFNIKveoNivARHBssQ1XQKl0dNmVwuJFOmCwbS3xoLL2Q7S6MVPGCAzYjJ4NS9jM-YQuREU-gxA-b2pyBFUcjfKpddcN_hYZs7kwIh7clKjoDjmHtwAGM-SCJfXSHw4toFpfcsWfc1Xf3stRnx-qi1Z7PnrEsQa1rULD5qF1fmnMjR30acNK1IJnxNsAQMdsybjPP63fiF9bNAXvyVNQEcjspbYg8pRYua8jTjVZzSuc0LKudBSx-yEDnXGxfmD8mF0cEje-7lbNLnQNbg'
     });
 
     const shortLivedToken = shortLivedResponse.data.access_token;
