@@ -77,31 +77,32 @@ app.get('/auth/instagram/callback', async (req, res) => {
       `);
     }
 
-    // --- Step B: Exchange for Long-Lived Token ---
-    let longLivedToken, expiresIn;
+// --- Step B: Exchange for Long-Lived Token (Facebook Graph API way) ---
+let longLivedToken, expiresIn;
 
-    try {
-      const longLivedResponse = await axios.get('https://graph.instagram.com/access_token', {
-        params: {
-          grant_type: 'ig_exchange_token',
-          client_secret: INSTAGRAM_CLIENT_SECRET,
-          access_token: shortLivedToken,
-        },
-        timeout: 15000
-      });
-      longLivedToken = longLivedResponse.data.access_token;
-      expiresIn = longLivedResponse.data.expires_in;
-    } catch (longErr) {
-      const detail = longErr.response?.data;
-      console.error('Long-lived token error:', detail);
-      return res.status(500).send(`
-        <h2>❌ Failed at Long-Lived Token Step</h2>
-        <pre style="background:#f4f4f4;padding:16px;border-radius:8px">${JSON.stringify(detail, null, 2)}</pre>
-        <p>Short-lived token was obtained successfully, but exchange to long-lived failed.</p>
-        <a href="/auth/instagram">Try Again</a>
-      `);
-    }
-
+try {
+  const longLivedResponse = await axios.get('https://graph.facebook.com/v19.0/oauth/access_token', { // ← Changed URL
+    params: {
+      grant_type: 'fb_exchange_token',        // ← Changed from ig_exchange_token
+      client_id: INSTAGRAM_CLIENT_ID,          // ← Added
+      client_secret: INSTAGRAM_CLIENT_SECRET,
+      fb_exchange_token: shortLivedToken,      // ← Changed param name
+    },
+    timeout: 15000
+  });
+  longLivedToken = longLivedResponse.data.access_token;
+  expiresIn = longLivedResponse.data.expires_in;
+} catch (longErr) {
+  const detail = longErr.response?.data;
+  console.error('Long-lived token error:', detail);
+  return res.status(500).send(`
+    <h2>❌ Failed at Long-Lived Token Step</h2>
+    <pre style="background:#f4f4f4;padding:16px;border-radius:8px">${JSON.stringify(detail, null, 2)}</pre>
+    <p>Short-lived token was obtained successfully, but exchange to long-lived failed.</p>
+    <a href="/auth/instagram">Try Again</a>
+  `);
+}
+    
     // --- Step C: Fetch Instagram Business Account ID ---
     let igAccountId = 'N/A';
 
